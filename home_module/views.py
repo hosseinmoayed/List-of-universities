@@ -19,12 +19,11 @@ class List_of_universities(ListView):
         context['search_result_by_uniname'] = uni
 
 
-        country = Country.objects.filter(Q(name__icontains=your_search_query)).first()
+        country_id = Country.objects.filter(Q(name__icontains=your_search_query)).first().id
         if country:
-            cities = country.city_set.all()
-            if cities:
-                for city in cities:
-                    context['search_result_by_countryname']+= city.university_set.all()
+            university = University.objects.filter(city__country_id=country_id)
+            if university:
+                context['search_result_by_countryname']=university
 
 
         r_city = City.objects.filter(Q(name__icontains=your_search_query)).first().university_set.all()
@@ -33,10 +32,8 @@ class List_of_universities(ListView):
         #filter_by_country
         country_f = Country.objects.filter(id=id).first()
         if country_f:
-            cities_f = country_f.city_set.all()
-            if cities_f:
-                for city in cities_f:
-                    context['filter_result_by_country'] += city.university_set.all()
+            university = University.objects.filter(city__country_id=country_f.id)
+                    context['filter_result_by_country'] = university 
 
         # filter_by_city
         city_f = City.objects.filter(id=id).first()
